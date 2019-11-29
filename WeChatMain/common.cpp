@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 DWORD weChatWinAddress = 0;
+HWND globalHwnd;
 
 /**
  * 作者QQ：50728123
@@ -18,6 +19,32 @@ DWORD getWeChatWinAddr()
 		weChatWinAddress = (DWORD)LoadLibrary(L"WeChatWin.dll");
 	}
 	return weChatWinAddress;
+}
+
+/**
+ * 作者QQ：50728123
+ * 交流群：810420984
+ * 作者微信：codeByDog
+ * 设置全局窗口 HWND
+ * @param  HWND hwnd
+ * @return void
+ */
+VOID setGlobalHwnd(HWND hwnd)
+{
+	globalHwnd = hwnd;
+}
+
+/**
+ * 作者QQ：50728123
+ * 交流群：810420984
+ * 作者微信：codeByDog
+ * 获取全局窗口 HWND
+ * @param  
+ * @return HWND
+ */
+HWND getGlobalHwnd()
+{
+	return globalHwnd;
 }
 
 /**

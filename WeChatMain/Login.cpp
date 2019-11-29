@@ -24,14 +24,14 @@ int isLogin()
  * @param  HWND hwnd
  * @return void
  */
-void getLoginStatus(HWND hwnd)
+void getLoginStatus()
 {
 	if (getWeChatWinAddr() != 0)
 	{
-		SetDlgItemText(hwnd, LOGIN_STATUS, isLogin() == 0 ? L"Î´µÇÂ¼" : L"ÒÑµÇÂ¼");
+		SetDlgItemText(getGlobalHwnd(), LOGIN_STATUS, isLogin() == 0 ? L"Î´µÇÂ¼" : L"ÒÑµÇÂ¼");
 	}
 	Sleep(500);
-	HANDLE lThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)getLoginStatus, hwnd, NULL, 0);
+	HANDLE lThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)getLoginStatus, NULL, NULL, 0);
 	if (lThread != 0) {
 		CloseHandle(lThread);
 	}

@@ -7,9 +7,12 @@
 #include "common.h"
 #include "MyInfo.h"
 #include "Login.h"
+#include "InlineHook.h"
+#include <CommCtrl.h>
+#include "SendMsg.h"
 using namespace std;
 
-HWND hwnd;
+
 DWORD WINAPI ShowDialog(
 	_In_ HMODULE hModule
 );
@@ -85,10 +88,53 @@ INT_PTR CALLBACK DialogProc(
 {
 	if (uMsg == WM_INITDIALOG)
 	{
-		hwnd = hwndDlg;
-		HANDLE lThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)getLoginStatus, hwnd, NULL, 0);
+		setGlobalHwnd(hwndDlg);
+		SetDlgItemText(hwndDlg, RECEIVE_WXID_TEXT, L"filehelper");
+		//初始化消息接收list
+		LV_COLUMN msgPcol = { 0 };
+		LPCWSTR msgTitle[] = { L"类型",L"self",L"来源",L"发送者", L"字符串", L"详情" };
+		int msgCx[] = {50,50,80,80,50,200};
+		msgPcol.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT;
+		msgPcol.fmt = LVCFMT_LEFT;
+		for (unsigned int i = 0; i < size(msgTitle); i++) {
+			msgPcol.pszText = (LPWSTR)msgTitle[i];
+			msgPcol.cx = msgCx[i];
+			ListView_InsertColumn(GetDlgItem(hwndDlg, RECIEVE_MSG_LIST), i, &msgPcol);
+		}
+		LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(RECIEVE_MSG_LIST);
+
+		//初始化数据库句柄list
+		LV_COLUMN dbPcol = { 0 };
+		LPCWSTR dbTitle[] = { L"句柄",L"数据库地址" };
+		int dbCx[] = { 80,350 };
+		dbPcol.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT;
+		dbPcol.fmt = LVCFMT_LEFT;
+		for (unsigned int i = 0; i < size(dbTitle); i++) {
+			dbPcol.pszText = (LPWSTR)dbTitle[i];
+			dbPcol.cx = dbCx[i];
+			ListView_InsertColumn(GetDlgItem(hwndDlg, DATABSE_HANDLE_LIST), i, &dbPcol);
+		}
+
+		//初始化好友列表list
+		LV_COLUMN friendPcol = { 0 };
+		LPCWSTR friendTitle[] = { L"wxid",L"头像",L"account",L"V1",L"备注",L"昵称" };
+		int friendCx[] = { 80,80,80,80,80,80 };
+		friendPcol.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT;
+		friendPcol.fmt = LVCFMT_LEFT;
+		for (unsigned int i = 0; i < size(friendTitle); i++) {
+			friendPcol.pszText = (LPWSTR)friendTitle[i];
+			friendPcol.cx = friendCx[i];
+			ListView_InsertColumn(GetDlgItem(hwndDlg, FRIEND_LIST), i, &friendPcol);
+		}
+
+		HANDLE lThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)getLoginStatus, NULL, NULL, 0);
 		if (lThread != 0) {
 			CloseHandle(lThread);
+		}
+
+		HANDLE hookThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)inLineHook, NULL, NULL, 0);
+		if (hookThread != 0) {
+			CloseHandle(hookThread);
 		}
 	}
 	if (uMsg == WM_COMMAND)
@@ -97,7 +143,7 @@ INT_PTR CALLBACK DialogProc(
 		{
 			if (isLogin() == 0)
 			{
-				SetDlgItemText(hwnd, MY_INFO_TEXT, L"请先登录微信");
+				SetDlgItemText(hwndDlg, MY_INFO_TEXT, L"请先登录微信");
 			}
 			else
 			{
@@ -120,10 +166,39 @@ INT_PTR CALLBACK DialogProc(
 				SetDlgItemText(hwndDlg, MY_INFO_TEXT, str);
 			}
 		}
+		else if (wParam == SEND_TEXT_BTN || wParam == SEND_IMG_BTN || wParam == SEND_ATTACH_BTN)
+		{
+			if (isLogin() == 0)
+			{
+				MessageBox(NULL, L"请先登录微信", L"错误", 0);
+				return 0;
+			}
+			wchar_t wxid[0x100] = {0};
+			wchar_t content[0x1000] = {0};
+			GetDlgItemText(hwndDlg, RECEIVE_WXID_TEXT, wxid, 100);
+			GetDlgItemText(hwndDlg, RECEIVE_CONTENT_TEXT, content, 1000);
+			if (wParam != SEND_TEXT_BTN && _waccess(content, 0) == -1)
+			{
+				MessageBox(NULL, L"文件不存在", L"错误", 0);
+				return 0;
+			}
+			switch (wParam)
+			{
+				case SEND_IMG_BTN:
+					SendImageMsg(wxid, content);
+					break;
+				case SEND_ATTACH_BTN:
+					SendAttachMsg(wxid, content);
+					break;
+				default:
+					SendTextMsg(wxid, content);
+					break;
+			}
+		}
 	}
 	else if (uMsg == WM_CLOSE)
 	{
-		EndDialog(hwndDlg, 0);
+		//EndDialog(hwndDlg, 0);
 	}
 	return FALSE;
 }

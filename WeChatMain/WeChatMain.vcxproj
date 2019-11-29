@@ -91,6 +91,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;WECHATMAIN_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -149,16 +150,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="common.cpp" />
+    <ClCompile Include="InlineHook.cpp" />
     <ClCompile Include="Login.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyInfo.cpp" />
+    <ClCompile Include="SendMsg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
+    <ClInclude Include="InlineHook.h" />
     <ClInclude Include="Login.h" />
     <ClInclude Include="MyInfo.h" />
     <ClInclude Include="offset.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SendMsg.h" />
     <ClInclude Include="struct.h" />
   </ItemGroup>
   <ItemGroup>

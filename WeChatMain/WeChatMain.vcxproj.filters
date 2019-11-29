@@ -22,6 +22,12 @@
     <Filter Include="登录退出相关">
       <UniqueIdentifier>{4fae3513-c3de-4a2b-a427-280a46065d1d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="发送消息">
+      <UniqueIdentifier>{69c7ee47-f416-4fa9-9cae-8abe6bed1939}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="InlineHook">
+      <UniqueIdentifier>{fbb38c34-3140-4153-bf78-7dd57396db11}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -35,6 +41,12 @@
     </ClCompile>
     <ClCompile Include="Login.cpp">
       <Filter>登录退出相关</Filter>
+    </ClCompile>
+    <ClCompile Include="SendMsg.cpp">
+      <Filter>发送消息</Filter>
+    </ClCompile>
+    <ClCompile Include="InlineHook.cpp">
+      <Filter>InlineHook</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -55,6 +67,12 @@
     </ClInclude>
     <ClInclude Include="Login.h">
       <Filter>登录退出相关</Filter>
+    </ClInclude>
+    <ClInclude Include="SendMsg.h">
+      <Filter>发送消息</Filter>
+    </ClInclude>
+    <ClInclude Include="InlineHook.h">
+      <Filter>InlineHook</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
